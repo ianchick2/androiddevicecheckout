@@ -3,6 +3,7 @@ package com.example.ianchick.checkout;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,12 +43,11 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         deviceSerial.setText(device.serialNumber);
         deviceUser.setText(device.getUserName());
 
-
-        int resourceId = context.getResources().getIdentifier(device.serialNumber.toLowerCase(), "drawable", context.getPackageName());
-        if (resourceId == 0) {
-            deviceImage.setVisibility(View.GONE);
-        } else {
+        if (!TextUtils.isEmpty(device.imageRef)) {
+            int resourceId = context.getResources().getIdentifier(device.imageRef.toLowerCase(), "drawable", context.getPackageName());
             deviceImage.setImageResource(resourceId);
+        } else {
+            deviceImage.setVisibility(View.GONE);
         }
 
         if (device.isCheckedOut()) {

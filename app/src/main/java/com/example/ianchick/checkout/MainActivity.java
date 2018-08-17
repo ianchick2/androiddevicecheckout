@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         device.put("title", d.deviceName);
         device.put("serial", d.serialNumber);
         device.put("user", d.getUserName());
-        device.put("imageRef", d.imageId);
+        device.put("imageRef", d.imageRef);
         device.put("isCheckedOut", d.isCheckedOut());
 
         db.collection("devices").document(d.serialNumber)
@@ -166,14 +166,23 @@ public class MainActivity extends AppCompatActivity {
                     for (DocumentSnapshot document : documents) {
                         if (document.exists()) {
                             Map<String, Object> data = document.getData();
-                            Device device = new Device(data.get("title").toString(), data.get("serial").toString());
-                            if (data.get("user") != null) {
-                                device.setUserName(data.get("user").toString());
+                            if (data.get("title") != null & data.get("serial") != null) {
+                                Device device = new Device(data.get("title").toString(), data.get("serial").toString());
+                                if (data.get("user") != null) {
+                                    device.setUserName(data.get("user").toString());
+                                } else {
+                                    device.setUserName("");
+                                }
+                                if (data.get("isCheckedOut") != null) {
+                                    device.setCheckedOut(data.get("isCheckedOut").toString());
+                                } else {
+                                    device.setCheckedOut(false);
+                                }
+                                if (data.get("imageRef") != null) {
+                                    device.imageRef = data.get("imageRef").toString();
+                                }
+                                deviceList.add(device);
                             }
-                            device.imageId = Integer.valueOf(data.get("imageRef").toString());
-                            device.setCheckedOut(data.get("isCheckedOut").toString());
-
-                            deviceList.add(device);
 
                             deviceAdapter = new DeviceAdapter(getApplicationContext(), deviceList);
                             deviceListView.setAdapter(deviceAdapter);

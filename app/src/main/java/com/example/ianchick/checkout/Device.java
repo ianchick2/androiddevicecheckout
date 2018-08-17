@@ -10,7 +10,7 @@ public class Device {
     public String serialNumber;
     private String userName;
     private boolean isCheckedOut;
-    public int imageId;
+    public String imageRef;
 
     public Device(String deviceName, String serialNumber) {
         this.deviceName = deviceName;
@@ -30,6 +30,10 @@ public class Device {
 
     public void setCheckedOut(String checkedOut) {
         isCheckedOut = Boolean.valueOf(checkedOut);
+    }
+
+    public void setCheckedOut(boolean checkedOut) {
+        isCheckedOut = checkedOut;
     }
 
     public void setUserName(String userName) {
