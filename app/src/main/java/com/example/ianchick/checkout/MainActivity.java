@@ -8,6 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -24,7 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private DeviceAdapter deviceAdapter;
     private ListView deviceListView;
-
-    private static ArrayList<Device> DEVICE_LIST = new ArrayList<>(Arrays.asList(
-            new Device("Moto G (3rd gen)", "ZY22242CRK"),
-            new Device("Samsung Galaxy S5", "RF1G6073JQY"),
-            new Device("CAT S41", "S411747041352")
-    ));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +52,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
-        for (Device device : DEVICE_LIST) {
-            updateDatabase(device);
-        }
+
+        updateDeviceList();
 
         deviceListView = findViewById(R.id.device_list);
-        deviceAdapter = new DeviceAdapter(this, DEVICE_LIST);
-        deviceListView.setAdapter(deviceAdapter);
-
         deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
@@ -84,7 +75,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void showCheckoutDialog(final Device device, final DeviceAdapter deviceAdapter) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_device:
+                Log.v(TAG, "Add device");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    private void showCheckoutDialog(final Device device, final DeviceAdapter deviceAdapter) {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.input_user_name, null);
         final AlertDialog inputUserDialog = new AlertDialog.Builder(this)
@@ -118,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         inputUserDialog.show();
     }
 
-    public void updateDatabase(final Device d) {
+    private void updateDatabase(final Device d) {
         Map<String, Object> device = new HashMap<>();
         device.put("title", d.deviceName);
         device.put("serial", d.serialNumber);
@@ -143,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void updateDeviceList() {
+    private void updateDeviceList() {
         final ArrayList<Device> deviceList = new ArrayList<>();
         db.collection("devices").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
