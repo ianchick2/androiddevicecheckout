@@ -8,11 +8,19 @@
     tools:context=".MainActivity"
     android:background="@color/brown">
 
-    <ListView
-        android:id="@+id/device_list"
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8sp"
-        android:layout_margin="8sp"
-        android:dividerHeight="8dp"/>
+        android:id="@+id/swipe_refresh_wrapper">
+
+        <ListView
+            android:id="@+id/device_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8sp"
+            android:layout_margin="8sp"
+            android:dividerHeight="8dp"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </LinearLayout>

@@ -40,7 +40,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
 
         deviceTitle.setText(device.deviceName);
         deviceSerial.setText(device.serialNumber);
-        deviceUser.setText(device.userName);
+        deviceUser.setText(device.getUserName());
 
 
         int resourceId = context.getResources().getIdentifier(device.serialNumber.toLowerCase(), "drawable", context.getPackageName());
@@ -50,7 +50,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
             deviceImage.setImageResource(resourceId);
         }
 
-        if (device.isCheckedOut) {
+        if (device.isCheckedOut()) {
             deviceIsCheckedOut.setText("Checked Out");
             convertView.setAlpha(0.5f);
             deviceIsCheckedOut.setTextColor(Color.parseColor("#ffcc0000"));

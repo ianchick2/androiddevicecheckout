@@ -8,8 +8,8 @@ import android.text.TextUtils;
 public class Device {
     public String deviceName;
     public String serialNumber;
-    public String userName;
-    public boolean isCheckedOut;
+    private String userName;
+    private boolean isCheckedOut;
     public int imageId;
 
     public Device(String deviceName, String serialNumber) {
@@ -20,6 +20,19 @@ public class Device {
 
     public void checkOut(String userName) {
         this.isCheckedOut = true;
+        setUserName(userName);
+    }
+
+    public void checkIn() {
+        this.isCheckedOut = false;
+        this.userName = "";
+    }
+
+    public void setCheckedOut(String checkedOut) {
+        isCheckedOut = Boolean.valueOf(checkedOut);
+    }
+
+    public void setUserName(String userName) {
         if (TextUtils.isEmpty(userName)) {
             this.userName = "";
         } else {
@@ -27,8 +40,11 @@ public class Device {
         }
     }
 
-    public void checkIn() {
-        this.isCheckedOut = false;
-        this.userName = "";
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public Boolean isCheckedOut() {
+        return this.isCheckedOut;
     }
 }
