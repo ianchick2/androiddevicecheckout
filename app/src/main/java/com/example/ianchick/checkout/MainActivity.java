@@ -1,6 +1,7 @@
 package com.example.ianchick.checkout;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -86,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.add_device:
                 Log.v(TAG, "Add device");
+                Intent intent = new Intent(this, AddDevice.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
