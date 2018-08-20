@@ -1,15 +1,23 @@
 package com.example.ianchick.checkout;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -37,18 +45,17 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         TextView deviceSerial = convertView.findViewById(R.id.device_item_serial);
         TextView deviceIsCheckedOut = convertView.findViewById(R.id.device_item_checked_out);
         TextView deviceUser = convertView.findViewById(R.id.device_item_user);
-        ImageView deviceImage = convertView.findViewById(R.id.device_item_image);
+
+        ImageView deviceImageView = convertView.findViewById(R.id.device_item_image);
 
         deviceTitle.setText(device.deviceName);
         deviceSerial.setText(device.serialNumber);
         deviceUser.setText(device.getUserName());
 
         if (!TextUtils.isEmpty(device.imageRef)) {
-            int resourceId = context.getResources().getIdentifier(device.imageRef.toLowerCase(), "drawable", context.getPackageName());
-            deviceImage.setImageResource(resourceId);
-            deviceImage.setVisibility(View.VISIBLE);
+            setImage(device.imageRef, deviceImageView);
         } else {
-            deviceImage.setVisibility(View.GONE);
+            deviceImageView.setVisibility(View.GONE);
         }
 
         if (device.isCheckedOut()) {
@@ -66,5 +73,28 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
 
     public Device getItem(int position) {
         return devices.get(position);
+    }
+
+    private void setImage(String filename, final ImageView imageView) {
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://androiddevicecheckout.appspot.com");
+        StorageReference storageRef = storage.getReference().child("images");
+        StorageReference imageRef = storageRef.child(filename + ".jpg");
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+        imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                imageView.setImageBitmap(bitmap);
+                imageView.setVisibility(View.VISIBLE);
+                Log.d("findme", "Successfully found image");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                imageView.setVisibility(View.GONE);
+                Log.d("findme", "Failed to find image because " + exception);
+            }
+        });
     }
 }
