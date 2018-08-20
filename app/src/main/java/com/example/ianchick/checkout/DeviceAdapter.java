@@ -46,6 +46,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         if (!TextUtils.isEmpty(device.imageRef)) {
             int resourceId = context.getResources().getIdentifier(device.imageRef.toLowerCase(), "drawable", context.getPackageName());
             deviceImage.setImageResource(resourceId);
+            deviceImage.setVisibility(View.VISIBLE);
         } else {
             deviceImage.setVisibility(View.GONE);
         }
