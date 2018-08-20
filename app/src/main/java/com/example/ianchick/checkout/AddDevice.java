@@ -43,10 +43,13 @@ public class AddDevice extends AppCompatActivity {
             case R.id.add_device_save:
                 String deviceName = ((EditText) findViewById(R.id.add_device_title)).getText().toString();
                 String serial = ((EditText) findViewById(R.id.add_device_serial)).getText().toString();
+                String imageRef = ((EditText) findViewById(R.id.add_device_imageref)).getText().toString();
 
                 if(!TextUtils.isEmpty(deviceName)) {
                     if (!TextUtils.isEmpty(serial)) {
-                        updateDatabase(new Device(deviceName, serial));
+                        Device device = new Device(deviceName, serial);
+                        device.imageRef = imageRef;
+                        updateDatabase(device);
                         finish();
                     } else {
                         ((TextView) findViewById(R.id.add_device_error_message)).setText("Please enter a serial number for the device");

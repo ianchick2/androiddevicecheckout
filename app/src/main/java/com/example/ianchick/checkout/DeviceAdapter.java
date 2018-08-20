@@ -26,13 +26,12 @@ import java.util.ArrayList;
  */
 public class DeviceAdapter extends ArrayAdapter<Device> {
 
+    private static final String TAG = "DeviceAdapter";
     private ArrayList<Device> devices;
-    private Context context;
 
     public DeviceAdapter(@NonNull Context context, ArrayList<Device> devices) {
         super(context, R.layout.device_list_item, devices);
         this.devices = devices;
-        this.context = context;
     }
 
     @Override
@@ -87,13 +86,13 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 imageView.setImageBitmap(bitmap);
                 imageView.setVisibility(View.VISIBLE);
-                Log.d("findme", "Successfully found image");
+                Log.v(TAG, "Successfully found image");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 imageView.setVisibility(View.GONE);
-                Log.d("findme", "Failed to find image because " + exception);
+                Log.v(TAG, "Failed to find image because " + exception);
             }
         });
     }

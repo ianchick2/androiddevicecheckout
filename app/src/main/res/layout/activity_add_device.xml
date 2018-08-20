@@ -27,4 +27,10 @@
         android:layout_height="wrap_content"
         android:hint="Device Serial Number"/>
 
+    <EditText
+        android:id="@+id/add_device_imageref"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Device Image Reference"/>
+
 </LinearLayout>
