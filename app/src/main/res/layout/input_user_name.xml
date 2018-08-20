@@ -5,10 +5,11 @@
     android:background="@android:color/background_light"
     android:padding="24dp">
 
-    <EditText
+    <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name"
+        android:completionThreshold="1"
         android:id="@+id/input_user_name_edit"
         android:singleLine="true"/>
 

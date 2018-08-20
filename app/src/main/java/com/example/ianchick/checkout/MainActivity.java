@@ -1,7 +1,9 @@
 package com.example.ianchick.checkout;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,8 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,8 +31,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showCheckoutDialog(final Device device, final DeviceAdapter deviceAdapter) {
+        final SharedPreferences sharedPref = this.getSharedPreferences("CheckoutPrefs", Context.MODE_PRIVATE);
+        final Set<String> users = sharedPref.getStringSet("Users", new HashSet<String>());
+
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.input_user_name, null);
         final AlertDialog inputUserDialog = new AlertDialog.Builder(this)
@@ -102,7 +110,9 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
 
-        final EditText inputName = dialogView.findViewById(R.id.input_user_name_edit);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(users));
+        final AutoCompleteTextView inputName = dialogView.findViewById(R.id.input_user_name_edit);
+        inputName.setAdapter(adapter);
 
         inputUserDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -117,6 +127,10 @@ public class MainActivity extends AppCompatActivity {
                             device.checkOut(inputName.getText().toString());
                             updateDatabase(device);
                             deviceAdapter.notifyDataSetChanged();
+
+                            users.add(inputName.getText().toString());
+                            sharedPref.edit().putStringSet("Users", users).apply();
+
                             inputUserDialog.dismiss();
                         }
                     }
