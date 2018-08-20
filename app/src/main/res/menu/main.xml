@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_baseline_add_24px"
         android:title="Add Device"
         app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/filter_list"
+        android:icon="@drawable/ic_baseline_remove_red_eye_24px"
+        android:title="Filter List"
+        app:showAsAction="ifRoom"/>
 </menu>

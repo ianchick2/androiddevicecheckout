@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, AddDevice.class);
                 startActivity(intent);
                 return true;
+            case R.id.filter_list:
+                deviceAdapter.getFilter().filter("Filter");
             default:
                 return super.onOptionsItemSelected(item);
 

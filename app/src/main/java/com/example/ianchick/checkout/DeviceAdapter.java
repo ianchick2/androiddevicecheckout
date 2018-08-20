@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by ianchick on 8/16/18
@@ -27,11 +30,21 @@ import java.util.ArrayList;
 public class DeviceAdapter extends ArrayAdapter<Device> {
 
     private static final String TAG = "DeviceAdapter";
-    private ArrayList<Device> devices;
+
+    private ArrayList<Device> allDevices;
+    private ArrayList<Device> shownDevices;
+
+    private String filterMode;
+    private static final String LIST_FILTER_ALL = "LIST_FILTER_ALL";
+    private static final String LIST_FILTER_AVAILABLE = "LIST_FILTER_AVAILABLE";
+    private static final String LIST_FILTER_UNAVAILABLE = "LIST_FILTER_UNAVAILABLE";
 
     public DeviceAdapter(@NonNull Context context, ArrayList<Device> devices) {
         super(context, R.layout.device_list_item, devices);
-        this.devices = devices;
+        this.allDevices = devices;
+        this.shownDevices = devices;
+        filterMode = "";
+        Collections.sort(this.shownDevices, new DeviceNameComparator());
     }
 
     @Override
@@ -70,8 +83,13 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         return convertView;
     }
 
+    @Override
+    public int getCount() {
+        return shownDevices != null ? shownDevices.size() : 0;
+    }
+
     public Device getItem(int position) {
-        return devices.get(position);
+        return shownDevices.get(position);
     }
 
     private void setImage(String filename, final ImageView imageView) {
@@ -95,5 +113,69 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
                 Log.v(TAG, "Failed to find image because " + exception);
             }
         });
+    }
+
+    public class DeviceNameComparator implements Comparator<Device> {
+        public int compare(Device left, Device right) {
+            return left.deviceName.compareTo(right.deviceName);
+        }
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new DeviceFilter();
+    }
+
+    private class DeviceFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            shownDevices = allDevices;
+            FilterResults results = new FilterResults();
+            ArrayList<Device> filterList = new ArrayList<>();
+            switch (filterMode) {
+                case LIST_FILTER_ALL:
+                    results.count = shownDevices.size();
+                    results.values = shownDevices;
+                    filterMode = LIST_FILTER_AVAILABLE;
+                    break;
+                case LIST_FILTER_UNAVAILABLE:
+                    for (Device device : shownDevices) {
+                        if (device.isCheckedOut()) {
+                            filterList.add(device);
+                        }
+                    }
+                    results.count = filterList.size();
+                    results.values = filterList;
+                    filterMode = LIST_FILTER_ALL;
+                    break;
+                case LIST_FILTER_AVAILABLE:
+                    for (Device device : shownDevices) {
+                        if (!device.isCheckedOut()) {
+                            filterList.add(device);
+                        }
+                    }
+                    results.count = filterList.size();
+                    results.values = filterList;
+                    filterMode = LIST_FILTER_UNAVAILABLE;
+                    break;
+                default:
+                    for (Device device : shownDevices) {
+                        if (!device.isCheckedOut()) {
+                            filterList.add(device);
+                        }
+                    }
+                    results.count = filterList.size();
+                    results.values = filterList;
+                    filterMode = LIST_FILTER_UNAVAILABLE;
+                    break;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            shownDevices = (ArrayList<Device>) results.values;
+            notifyDataSetChanged();
+        }
     }
 }
