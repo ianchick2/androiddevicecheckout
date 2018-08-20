@@ -64,11 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 view.setSelected(true);
 
                 if (device.isCheckedOut()) {
-                    device.checkIn();
-                    updateDatabase(device);
-                    deviceAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(), "Device Returned. Android Fam thanks you!", Toast.LENGTH_SHORT).show();
-
+                    showCheckInDialog(device, deviceAdapter);
                 } else {
                     showCheckoutDialog(device, deviceAdapter);
                 }
@@ -123,6 +119,36 @@ public class MainActivity extends AppCompatActivity {
                             deviceAdapter.notifyDataSetChanged();
                             inputUserDialog.dismiss();
                         }
+                    }
+                });
+            }
+        });
+        inputUserDialog.show();
+    }
+
+    private void showCheckInDialog(final Device device, final DeviceAdapter deviceAdapter) {
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.checkin_confirmation_dialog, null);
+        final AlertDialog inputUserDialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle("Are you sure you want to return this device? ")
+                .setMessage(device.deviceName)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        inputUserDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = inputUserDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        device.checkIn();
+                        updateDatabase(device);
+                        deviceAdapter.notifyDataSetChanged();
+                        Toast.makeText(getApplicationContext(), "Device Returned. Android Fam thanks you!", Toast.LENGTH_SHORT).show();
+                        inputUserDialog.dismiss();
                     }
                 });
             }
