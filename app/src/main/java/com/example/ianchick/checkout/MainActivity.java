@@ -93,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.filter_list:
                 deviceAdapter.getFilter().filter("Filter");
+                return true;
+            case R.id.sort_list:
+                deviceAdapter.sortList();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 

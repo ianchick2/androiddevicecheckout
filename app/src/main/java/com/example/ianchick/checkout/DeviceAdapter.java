@@ -39,12 +39,13 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
     private static final String LIST_FILTER_AVAILABLE = "LIST_FILTER_AVAILABLE";
     private static final String LIST_FILTER_UNAVAILABLE = "LIST_FILTER_UNAVAILABLE";
 
+    private boolean isSortedAZ;
+
     public DeviceAdapter(@NonNull Context context, ArrayList<Device> devices) {
         super(context, R.layout.device_list_item, devices);
         this.allDevices = devices;
         this.shownDevices = devices;
         filterMode = "";
-        Collections.sort(this.shownDevices, new DeviceNameComparator());
     }
 
     @Override
@@ -81,6 +82,20 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         }
 
         return convertView;
+    }
+
+    public void sortList() {
+        Log.d("findme", "sort");
+        if (!isSortedAZ) {
+            Log.d("findme", "sortAZ");
+            Collections.sort(this.shownDevices, new DeviceNameComparator());
+            isSortedAZ = true;
+        } else {
+            Log.d("findme", "sortZA");
+            Collections.reverse(this.shownDevices);
+            isSortedAZ = false;
+        }
+        notifyDataSetChanged();
     }
 
     @Override
