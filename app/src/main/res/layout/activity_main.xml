@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <Chronometer
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/last_updated_status_bar"
+        android:background="@android:color/darker_gray"
+        android:textAlignment="center"
+        android:textSize="12sp"/>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_wrapper"
         android:layout_width="match_parent"

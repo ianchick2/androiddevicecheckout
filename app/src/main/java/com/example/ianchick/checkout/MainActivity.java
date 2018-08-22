@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,10 +45,16 @@ public class MainActivity extends AppCompatActivity {
     private DeviceAdapter deviceAdapter;
     private ListView deviceListView;
 
+    private Chronometer lastUpdated;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        lastUpdated = findViewById(R.id.last_updated_status_bar);
+        lastUpdated.start();
+        lastUpdated.setFormat("Last updated %s minutes ago");
 
         final SwipeRefreshLayout swipeLayout = findViewById(R.id.swipe_refresh_wrapper);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -54,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
             public void onRefresh() {
                 updateDeviceList();
                 swipeLayout.setRefreshing(false);
+                lastUpdated.setBase(SystemClock.elapsedRealtime());
+
             }
         });
 
