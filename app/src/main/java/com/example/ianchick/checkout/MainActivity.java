@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         lastUpdated = findViewById(R.id.last_updated_status_bar);
         lastUpdated.start();
-        lastUpdated.setFormat("Last updated %s minutes ago");
+        lastUpdated.setFormat("Last updated %s ago");
 
         final SwipeRefreshLayout swipeLayout = findViewById(R.id.swipe_refresh_wrapper);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
