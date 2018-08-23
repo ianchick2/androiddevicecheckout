@@ -8,9 +8,9 @@ import android.text.TextUtils;
 public class Device {
     public String deviceName;
     public String serialNumber;
+    public String imageRef;
     private String userName;
     private boolean isCheckedOut;
-    public String imageRef;
 
     public Device(String deviceName, String serialNumber) {
         this.deviceName = deviceName;
@@ -36,16 +36,16 @@ public class Device {
         isCheckedOut = checkedOut;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
     public void setUserName(String userName) {
         if (TextUtils.isEmpty(userName)) {
             this.userName = "";
         } else {
             this.userName = userName;
         }
-    }
-
-    public String getUserName() {
-        return this.userName;
     }
 
     public Boolean isCheckedOut() {

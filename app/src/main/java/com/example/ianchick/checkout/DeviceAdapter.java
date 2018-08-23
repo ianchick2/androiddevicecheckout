@@ -1,5 +1,6 @@
 package com.example.ianchick.checkout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,15 +31,12 @@ import java.util.Comparator;
 public class DeviceAdapter extends ArrayAdapter<Device> {
 
     private static final String TAG = "DeviceAdapter";
-
-    private ArrayList<Device> allDevices;
-    private ArrayList<Device> shownDevices;
-
-    private String filterMode;
     private static final String LIST_FILTER_ALL = "LIST_FILTER_ALL";
     private static final String LIST_FILTER_AVAILABLE = "LIST_FILTER_AVAILABLE";
     private static final String LIST_FILTER_UNAVAILABLE = "LIST_FILTER_UNAVAILABLE";
-
+    private ArrayList<Device> allDevices;
+    private ArrayList<Device> shownDevices;
+    private String filterMode;
     private boolean isSortedAZ;
 
     public DeviceAdapter(@NonNull Context context, ArrayList<Device> devices) {
@@ -85,13 +83,10 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
     }
 
     public void sortList() {
-        Log.d("findme", "sort");
         if (!isSortedAZ) {
-            Log.d("findme", "sortAZ");
             Collections.sort(this.shownDevices, new DeviceNameComparator());
             isSortedAZ = true;
         } else {
-            Log.d("findme", "sortZA");
             Collections.reverse(this.shownDevices);
             isSortedAZ = false;
         }
@@ -114,6 +109,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
 
         final long ONE_MEGABYTE = 1024 * 1024;
         imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @SuppressLint("LogNotTimber")
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -122,6 +118,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
                 Log.v(TAG, "Successfully found image");
             }
         }).addOnFailureListener(new OnFailureListener() {
+            @SuppressLint("LogNotTimber")
             @Override
             public void onFailure(@NonNull Exception exception) {
                 imageView.setVisibility(View.GONE);
@@ -130,15 +127,15 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         });
     }
 
+    @Override
+    public Filter getFilter() {
+        return new DeviceFilter();
+    }
+
     public class DeviceNameComparator implements Comparator<Device> {
         public int compare(Device left, Device right) {
             return left.deviceName.compareTo(right.deviceName);
         }
-    }
-
-    @Override
-    public Filter getFilter() {
-        return new DeviceFilter();
     }
 
     private class DeviceFilter extends Filter {

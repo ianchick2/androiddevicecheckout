@@ -1,5 +1,6 @@
 package com.example.ianchick.checkout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("LogNotTimber")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -197,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         db.collection("devices").document(d.serialNumber)
                 .set(device)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.v(TAG, "DeviceSnapshot added with ID: " + d.serialNumber);
@@ -204,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
+                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.v(TAG, "Error adding document", e);
@@ -214,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateDeviceList() {
         final ArrayList<Device> deviceList = new ArrayList<>();
         db.collection("devices").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @SuppressLint("LogNotTimber")
             @Override
             public void onComplete(@NonNull Task task) {
                 if (task.isSuccessful()) {
@@ -243,13 +248,13 @@ public class MainActivity extends AppCompatActivity {
                             deviceAdapter = new DeviceAdapter(getApplicationContext(), deviceList);
                             deviceListView.setAdapter(deviceAdapter);
 
-                            Log.d(TAG, "DocumentSnapshot data: " + data);
+                            Log.v(TAG, "DocumentSnapshot data: " + data);
                         } else {
-                            Log.d(TAG, "No such document");
+                            Log.v(TAG, "No such document");
                         }
                     }
                 } else {
-                    Log.d(TAG, "failed query with ", task.getException());
+                    Log.v(TAG, "failed query with ", task.getException());
                 }
             }
         });
