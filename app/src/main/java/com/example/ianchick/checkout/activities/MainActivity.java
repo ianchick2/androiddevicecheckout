@@ -1,4 +1,4 @@
-package com.example.ianchick.checkout;
+package com.example.ianchick.checkout.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,6 +24,8 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Toast;
 
+import com.example.ianchick.checkout.adapters.ListDevicesAdapter;
+import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

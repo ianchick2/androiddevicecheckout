@@ -1,4 +1,4 @@
-package com.example.ianchick.checkout;
+package com.example.ianchick.checkout.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
 
 import java.util.ArrayList;

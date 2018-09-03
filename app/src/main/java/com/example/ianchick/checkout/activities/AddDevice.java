@@ -1,4 +1,4 @@
-package com.example.ianchick.checkout;
+package com.example.ianchick.checkout.activities;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
