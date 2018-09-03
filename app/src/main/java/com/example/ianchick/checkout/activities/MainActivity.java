@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,8 +26,8 @@ import android.widget.Chronometer;
 import android.widget.Toast;
 
 import com.example.ianchick.checkout.OnRecyclerViewItemClickListener;
-import com.example.ianchick.checkout.adapters.ListDevicesAdapter;
 import com.example.ianchick.checkout.R;
+import com.example.ianchick.checkout.adapters.ListDevicesAdapter;
 import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         db = FirebaseFirestore.getInstance();
 
         deviceRecyclerView = findViewById(R.id.device_recycler_view);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(deviceRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        deviceRecyclerView.addItemDecoration(dividerItemDecoration);
+
         deviceAdapter = new ListDevicesAdapter(deviceList);
         deviceAdapter.setOnRecyclerViewItemClickListener(this);
         updateDeviceList(deviceAdapter);
@@ -97,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                 startActivity(intent);
                 return true;
 //            case R.id.filter_list:
-//                deviceAdapter.getFilter().filter("Filter");
+//                deviceAdapster.getFilter().filter("Filter");
 //                return true;
 //            case R.id.sort_list:
 //                deviceAdapter.sortList();
