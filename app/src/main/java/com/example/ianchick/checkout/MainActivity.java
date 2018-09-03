@@ -11,19 +11,20 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,8 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
-    private DeviceAdapter deviceAdapter;
-    private ListView deviceListView;
+    private ListDevicesAdapter deviceAdapter;
+    private ArrayList<Device> deviceList = new ArrayList<>();
+
+    private RecyclerView deviceRecyclerView;
 
     private Chronometer lastUpdated;
 
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateDeviceList();
+                updateDeviceList(deviceAdapter);
                 swipeLayout.setRefreshing(false);
                 lastUpdated.setBase(SystemClock.elapsedRealtime());
 
@@ -70,22 +73,10 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        updateDeviceList();
+        deviceRecyclerView = findViewById(R.id.device_recycler_view);
+        deviceAdapter = new ListDevicesAdapter(deviceList);
 
-        deviceListView = findViewById(R.id.device_list);
-        deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
-                final Device device = deviceAdapter.getItem(position);
-                view.setSelected(true);
-
-                if (device.isCheckedOut()) {
-                    showCheckInDialog(device, deviceAdapter);
-                } else {
-                    showCheckoutDialog(device, deviceAdapter);
-                }
-            }
-        });
+        updateDeviceList(deviceAdapter);
     }
 
     @Override
@@ -103,19 +94,19 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, AddDevice.class);
                 startActivity(intent);
                 return true;
-            case R.id.filter_list:
-                deviceAdapter.getFilter().filter("Filter");
-                return true;
-            case R.id.sort_list:
-                deviceAdapter.sortList();
-                return true;
+//            case R.id.filter_list:
+//                deviceAdapter.getFilter().filter("Filter");
+//                return true;
+//            case R.id.sort_list:
+//                deviceAdapter.sortList();
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
         }
     }
 
-    private void showCheckoutDialog(final Device device, final DeviceAdapter deviceAdapter) {
+    private void showCheckoutDialog(final Device device, final ListDevicesAdapter deviceAdapter) {
         final SharedPreferences sharedPref = this.getSharedPreferences("CheckoutPrefs", Context.MODE_PRIVATE);
         final Set<String> users = sharedPref.getStringSet("Users", new HashSet<String>());
 
@@ -158,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         inputUserDialog.show();
     }
 
-    private void showCheckInDialog(final Device device, final DeviceAdapter deviceAdapter) {
+    private void showCheckInDialog(final Device device, final ListDevicesAdapter deviceAdapter) {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.checkin_confirmation_dialog, null);
         final AlertDialog inputUserDialog = new AlertDialog.Builder(this)
@@ -215,10 +206,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void updateDeviceList() {
-        final ArrayList<Device> deviceList = new ArrayList<>();
+    private void updateDeviceList(final ListDevicesAdapter deviceAdapter) {
         db.collection("devices").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @SuppressLint("LogNotTimber")
             @Override
             public void onComplete(@NonNull Task task) {
                 if (task.isSuccessful()) {
@@ -244,15 +233,13 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 deviceList.add(device);
                             }
-
-                            deviceAdapter = new DeviceAdapter(getApplicationContext(), deviceList);
-                            deviceListView.setAdapter(deviceAdapter);
-
                             Log.v(TAG, "DocumentSnapshot data: " + data);
                         } else {
                             Log.v(TAG, "No such document");
                         }
                     }
+                    deviceRecyclerView.setAdapter(deviceAdapter);
+                    deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 } else {
                     Log.v(TAG, "failed query with ", task.getException());
                 }
