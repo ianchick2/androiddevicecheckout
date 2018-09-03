@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Toast;
 
+import com.example.ianchick.checkout.OnRecyclerViewItemClickListener;
 import com.example.ianchick.checkout.adapters.ListDevicesAdapter;
 import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 updateDeviceList(deviceAdapter);
                 swipeLayout.setRefreshing(false);
                 lastUpdated.setBase(SystemClock.elapsedRealtime());
-
             }
         });
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         deviceRecyclerView = findViewById(R.id.device_recycler_view);
         deviceAdapter = new ListDevicesAdapter(deviceList);
-
+        deviceAdapter.setOnRecyclerViewItemClickListener(this);
         updateDeviceList(deviceAdapter);
     }
 
@@ -247,5 +247,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClick(int position, View view) {
+        Device device = deviceList.get(position);
+        if (deviceList.get(position).isCheckedOut()) {
+            showCheckInDialog(device, deviceAdapter);
+        } else {
+            showCheckoutDialog(device, deviceAdapter);
+        }
     }
 }

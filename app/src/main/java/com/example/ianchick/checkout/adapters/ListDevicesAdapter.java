@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.ianchick.checkout.OnRecyclerViewItemClickListener;
 import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
 
@@ -19,9 +21,14 @@ import java.util.ArrayList;
 public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.DeviceViewHolder> {
 
     private ArrayList<Device> devices;
+    private OnRecyclerViewItemClickListener onItemClickListener;
 
     public ListDevicesAdapter(ArrayList<Device> source) {
         this.devices = source;
+    }
+
+    public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -56,7 +63,9 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         TextView deviceUser;
         ImageView deviceImageView;
 
-        DeviceViewHolder(View deviceItemView) {
+        RelativeLayout parentLayout;
+
+        DeviceViewHolder(final View deviceItemView) {
             super(deviceItemView);
 
             deviceTitle = deviceItemView.findViewById(R.id.device_item_title);
@@ -64,6 +73,16 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
             deviceIsCheckedOut = deviceItemView.findViewById(R.id.device_item_checked_out);
             deviceUser = deviceItemView.findViewById(R.id.device_item_user);
             deviceImageView = deviceItemView.findViewById(R.id.device_item_image);
+
+            parentLayout = deviceItemView.findViewById(R.id.device_list_item_relative_layout);
+            parentLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(getAdapterPosition(), deviceItemView);
+                    }
+                }
+            });
 
         }
     }
