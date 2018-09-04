@@ -73,6 +73,29 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         return devices.size();
     }
 
+    private void setImage(String filename, final ImageView imageView) {
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://androiddevicecheckout.appspot.com");
+        StorageReference storageRef = storage.getReference().child("images");
+        StorageReference imageRef = storageRef.child(filename + ".jpg");
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+        imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @SuppressLint("LogNotTimber")
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                imageView.setImageBitmap(bitmap);
+                imageView.setVisibility(View.VISIBLE);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @SuppressLint("LogNotTimber")
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                imageView.setVisibility(View.GONE);
+            }
+        });
+    }
+
     class DeviceViewHolder extends RecyclerView.ViewHolder {
 
         TextView deviceTitle;
@@ -102,28 +125,5 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 }
             });
         }
-    }
-
-    private void setImage(String filename, final ImageView imageView) {
-        FirebaseStorage storage = FirebaseStorage.getInstance("gs://androiddevicecheckout.appspot.com");
-        StorageReference storageRef = storage.getReference().child("images");
-        StorageReference imageRef = storageRef.child(filename + ".jpg");
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-        imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @SuppressLint("LogNotTimber")
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imageView.setImageBitmap(bitmap);
-                imageView.setVisibility(View.VISIBLE);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @SuppressLint("LogNotTimber")
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                imageView.setVisibility(View.GONE);
-            }
-        });
     }
 }

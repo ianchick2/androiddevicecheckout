@@ -38,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     private FirebaseFirestore db;
     private ListDevicesAdapter deviceAdapter;
     private ArrayList<Device> deviceList = new ArrayList<>();
+    private int filterMode;
 
     private RecyclerView deviceRecyclerView;
 
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        filterMode = 0;
 
         lastUpdated = findViewById(R.id.last_updated_status_bar);
         lastUpdated.start();
@@ -100,12 +104,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                 Intent intent = new Intent(this, AddDevice.class);
                 startActivity(intent);
                 return true;
-//            case R.id.filter_list:
-//                deviceAdapster.getFilter().filter("Filter");
-//                return true;
-//            case R.id.sort_list:
-//                deviceAdapter.sortList();
-//                return true;
+            case R.id.filter_list:
+                filterDevices();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -244,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                             Log.v(TAG, "No such document");
                         }
                     }
+                    Collections.sort(deviceList);
                     deviceRecyclerView.setAdapter(deviceAdapter);
                     deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 } else {
@@ -260,6 +262,37 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
             showCheckInDialog(device, deviceAdapter);
         } else {
             showCheckoutDialog(device, deviceAdapter);
+        }
+    }
+
+    public void filterDevices() {
+        ArrayList<Device> checkedOutDevices = new ArrayList<>();
+        ArrayList<Device> checkedInDevices = new ArrayList<>();
+        for (Device d : deviceList) {
+            if (d.isCheckedOut()) {
+                checkedOutDevices.add(d);
+            } else {
+                checkedInDevices.add(d);
+            }
+        }
+        switch (filterMode) {
+            case 0:
+                filterMode += 1;
+                deviceAdapter = new ListDevicesAdapter(checkedInDevices);
+                deviceRecyclerView.setAdapter(deviceAdapter);
+                deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                return;
+            case 1:
+                filterMode += 1;
+                deviceAdapter = new ListDevicesAdapter(checkedOutDevices);
+                deviceRecyclerView.setAdapter(deviceAdapter);
+                deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                return;
+            case 2:
+                filterMode = 0;
+                deviceAdapter = new ListDevicesAdapter(deviceList);
+                deviceRecyclerView.setAdapter(deviceAdapter);
+                deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         }
     }
 }
