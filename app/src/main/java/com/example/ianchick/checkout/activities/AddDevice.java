@@ -1,16 +1,16 @@
-package com.example.ianchick.checkout;
+package com.example.ianchick.checkout.activities;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.ianchick.checkout.R;
+import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -18,9 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+import timber.log.Timber;
+
 public class AddDevice extends AppCompatActivity {
 
-    private static final String TAG = "AddDevice";
     private FirebaseFirestore db;
 
     @Override
@@ -75,17 +76,15 @@ public class AddDevice extends AppCompatActivity {
         db.collection("devices").document(d.serialNumber)
                 .set(device)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.v(TAG, "DeviceSnapshot added with ID: " + d.serialNumber);
+                        Timber.v("DeviceSnapshot added with ID: %s", d.serialNumber);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
-                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.v(TAG, "Error adding document", e);
+                        Timber.v(e, "Error adding document");
                     }
                 });
     }

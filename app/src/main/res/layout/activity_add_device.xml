@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    tools:context=".AddDevice">
+    tools:context=".activities.AddDevice">
 
     <TextView
         android:id="@+id/add_device_error_message"

@@ -1,11 +1,12 @@
-package com.example.ianchick.checkout;
+package com.example.ianchick.checkout.models;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 /**
  * Created by ianchick on 8/16/18
  */
-public class Device {
+public class Device implements Comparable<Device> {
     public String deviceName;
     public String serialNumber;
     public String imageRef;
@@ -50,5 +51,11 @@ public class Device {
 
     public Boolean isCheckedOut() {
         return this.isCheckedOut;
+    }
+
+
+    @Override
+    public int compareTo(@NonNull Device device) {
+        return this.deviceName.compareTo(device.deviceName);
     }
 }

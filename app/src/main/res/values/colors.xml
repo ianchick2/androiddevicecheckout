@@ -9,4 +9,8 @@
     <color name="midBlue">#1F487E</color>
     <color name="lightBlue">#CEE5FF</color>
     <color name="red">#FB3640</color>
+    <color name ="mainActivityBG">#BDBDBD</color>
+    <color name="deviceAvailability">#4527A0</color>
+
+    <color name="generic_orange">#FFFC744D</color>
 </resources>

@@ -1,6 +1,5 @@
-package com.example.ianchick.checkout;
+package com.example.ianchick.checkout.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,19 +10,23 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.ianchick.checkout.OnRecyclerViewItemClickListener;
+import com.example.ianchick.checkout.R;
+import com.example.ianchick.checkout.adapters.ListDevicesAdapter;
+import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,18 +36,21 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+import timber.log.Timber;
 
-    private static final String TAG = "MainActivity";
+public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
+
     private FirebaseFirestore db;
-    private DeviceAdapter deviceAdapter;
-    private ListView deviceListView;
+    private ListDevicesAdapter deviceAdapter;
+    private ArrayList<Device> deviceList = new ArrayList<>();
+    private RecyclerView deviceRecyclerView;
 
     private Chronometer lastUpdated;
 
@@ -61,31 +67,24 @@ public class MainActivity extends AppCompatActivity {
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                deviceList = new ArrayList<>();
                 updateDeviceList();
                 swipeLayout.setRefreshing(false);
                 lastUpdated.setBase(SystemClock.elapsedRealtime());
-
             }
         });
 
         db = FirebaseFirestore.getInstance();
 
+        deviceRecyclerView = findViewById(R.id.device_recycler_view);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(deviceRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        deviceRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        deviceAdapter = new ListDevicesAdapter(deviceList);
+        deviceAdapter.setOnRecyclerViewItemClickListener(this);
+        deviceRecyclerView.setAdapter(deviceAdapter);
+        deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         updateDeviceList();
-
-        deviceListView = findViewById(R.id.device_list);
-        deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
-                final Device device = deviceAdapter.getItem(position);
-                view.setSelected(true);
-
-                if (device.isCheckedOut()) {
-                    showCheckInDialog(device, deviceAdapter);
-                } else {
-                    showCheckoutDialog(device, deviceAdapter);
-                }
-            }
-        });
     }
 
     @Override
@@ -94,20 +93,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @SuppressLint("LogNotTimber")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_device:
-                Log.v(TAG, "Add device");
+                Timber.v("Add device");
                 Intent intent = new Intent(this, AddDevice.class);
                 startActivity(intent);
                 return true;
             case R.id.filter_list:
-                deviceAdapter.getFilter().filter("Filter");
-                return true;
-            case R.id.sort_list:
-                deviceAdapter.sortList();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -115,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showCheckoutDialog(final Device device, final DeviceAdapter deviceAdapter) {
+    private void showCheckoutDialog(final Device device) {
         final SharedPreferences sharedPref = this.getSharedPreferences("CheckoutPrefs", Context.MODE_PRIVATE);
         final Set<String> users = sharedPref.getStringSet("Users", new HashSet<String>());
 
@@ -158,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         inputUserDialog.show();
     }
 
-    private void showCheckInDialog(final Device device, final DeviceAdapter deviceAdapter) {
+    private void showCheckInDialog(final Device device) {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.checkin_confirmation_dialog, null);
         final AlertDialog inputUserDialog = new AlertDialog.Builder(this)
@@ -199,26 +193,24 @@ public class MainActivity extends AppCompatActivity {
         db.collection("devices").document(d.serialNumber)
                 .set(device)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.v(TAG, "DeviceSnapshot added with ID: " + d.serialNumber);
+                        Timber.v("DeviceSnapshot added with ID: %s", d.serialNumber);
 
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
-                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.v(TAG, "Error adding document", e);
+                        Timber.v(e, "Error adding document");
                     }
                 });
     }
 
     private void updateDeviceList() {
-        final ArrayList<Device> deviceList = new ArrayList<>();
+        deviceAdapter = new ListDevicesAdapter(deviceList);
+        deviceAdapter.setOnRecyclerViewItemClickListener(this);
         db.collection("devices").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @SuppressLint("LogNotTimber")
             @Override
             public void onComplete(@NonNull Task task) {
                 if (task.isSuccessful()) {
@@ -244,19 +236,27 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 deviceList.add(device);
                             }
-
-                            deviceAdapter = new DeviceAdapter(getApplicationContext(), deviceList);
-                            deviceListView.setAdapter(deviceAdapter);
-
-                            Log.v(TAG, "DocumentSnapshot data: " + data);
+                            Timber.v("DocumentSnapshot data: %s", data);
                         } else {
-                            Log.v(TAG, "No such document");
+                            Timber.v("No such document");
                         }
                     }
+                    Collections.sort(deviceList);
+                    deviceRecyclerView.setAdapter(deviceAdapter);
                 } else {
-                    Log.v(TAG, "failed query with ", task.getException());
+                    Timber.v(task.getException(), "failed query with ");
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClick(int position, View view) {
+        Device device = deviceList.get(position);
+        if (deviceList.get(position).isCheckedOut()) {
+            showCheckInDialog(device);
+        } else {
+            showCheckoutDialog(device);
+        }
     }
 }
