@@ -47,7 +47,7 @@ public class AddDevice extends AppCompatActivity {
                 String serial = ((EditText) findViewById(R.id.add_device_serial)).getText().toString();
                 String imageRef = ((EditText) findViewById(R.id.add_device_imageref)).getText().toString();
 
-                if(!TextUtils.isEmpty(deviceName)) {
+                if (!TextUtils.isEmpty(deviceName)) {
                     if (!TextUtils.isEmpty(serial)) {
                         Device device = new Device(deviceName, serial);
                         device.imageRef = imageRef;

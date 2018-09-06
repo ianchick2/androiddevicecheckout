@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,17 +23,24 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by ianchick on 8/31/18
  */
-public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.DeviceViewHolder> {
+public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.DeviceViewHolder> implements Filterable {
 
     private ArrayList<Device> devices;
+    private ArrayList<Device> devicesFiltered;
     private OnRecyclerViewItemClickListener onItemClickListener;
+
+    private List<String> AVAILABLE_STRINGS = Arrays.asList("available", "false", "free", "avail");
+    private List<String> UNAVAILABLE_STRINGS = Arrays.asList("unavailable", "true", "checked", "out");
 
     public ListDevicesAdapter(ArrayList<Device> source) {
         this.devices = source;
+        this.devicesFiltered = devices;
     }
 
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener onItemClickListener) {
@@ -48,7 +57,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, final int position) {
-        final Device device = devices.get(position);
+        final Device device = devicesFiltered.get(position);
         holder.deviceTitle.setText(device.deviceName);
         holder.deviceSerial.setText(device.serialNumber);
         holder.deviceUser.setText(device.getUserName());
@@ -74,7 +83,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
 
     @Override
     public int getItemCount() {
-        return devices.size();
+        return devicesFiltered.size();
     }
 
     private void setImage(String filename, final ImageView imageView) {
@@ -96,6 +105,42 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 imageView.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    devicesFiltered = devices;
+                } else {
+                    ArrayList<Device> filteredList = new ArrayList<>();
+                    for (Device d : devices) {
+                        if (d.deviceName.toLowerCase().contains(charString.toLowerCase())
+                                || d.getUserName().toLowerCase().contains(charString.toLowerCase())
+                                || d.serialNumber.toLowerCase().contains(charString.toLowerCase())
+                                || (AVAILABLE_STRINGS.contains(charString.toLowerCase()) && !d.isCheckedOut())
+                                || (UNAVAILABLE_STRINGS.contains(charString.toLowerCase()) && d.isCheckedOut()))
+
+                        {
+                            filteredList.add(d);
+                        }
+                    }
+                    devicesFiltered = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = devicesFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                devicesFiltered = (ArrayList<Device>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder {

@@ -1,5 +1,6 @@
 package com.example.ianchick.checkout.activities;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,8 +53,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     private ListDevicesAdapter deviceAdapter;
     private ArrayList<Device> deviceList = new ArrayList<>();
     private RecyclerView deviceRecyclerView;
-
     private Chronometer lastUpdated;
+
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,26 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                deviceAdapter.getFilter().filter(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                deviceAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -101,12 +124,21 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                 Intent intent = new Intent(this, AddDevice.class);
                 startActivity(intent);
                 return true;
-            case R.id.filter_list:
+            case R.id.search:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+            return;
+        }
+        super.onBackPressed();
     }
 
     private void showCheckoutDialog(final Device device) {
