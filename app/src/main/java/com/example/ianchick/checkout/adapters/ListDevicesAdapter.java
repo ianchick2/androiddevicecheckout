@@ -167,7 +167,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 @Override
                 public void onClick(View view) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(getAdapterPosition(), deviceItemView);
+                        onItemClickListener.onItemClick(deviceItemView, deviceSerial.getText().toString());
                     }
                 }
             });

@@ -171,10 +171,8 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                             device.checkOut(inputName.getText().toString());
                             updateDatabase(device);
                             deviceAdapter.notifyDataSetChanged();
-
                             users.add(inputName.getText().toString());
                             sharedPref.edit().putStringSet("Users", users).apply();
-
                             inputUserDialog.dismiss();
                         }
                     }
@@ -283,12 +281,19 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     }
 
     @Override
-    public void onItemClick(int position, View view) {
-        Device device = deviceList.get(position);
-        if (deviceList.get(position).isCheckedOut()) {
-            showCheckInDialog(device);
-        } else {
-            showCheckoutDialog(device);
+    public void onItemClick(View view, String id) {
+        Device device = null;
+        for (Device d : deviceList) {
+            if (d.serialNumber.equals(id)) {
+                device = d;
+            }
+        }
+        if (device != null) {
+            if (device.isCheckedOut()) {
+                showCheckInDialog(device);
+            } else {
+                showCheckoutDialog(device);
+            }
         }
     }
 }
