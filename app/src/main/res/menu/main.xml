@@ -7,8 +7,11 @@
         android:title="Add Device"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/filter_list"
-        android:icon="@drawable/ic_baseline_remove_red_eye_24px"
-        android:title="Filter List"
-        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_baseline_search_24px"
+        android:orderInCategory="2"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:title="Search" />
 </menu>
