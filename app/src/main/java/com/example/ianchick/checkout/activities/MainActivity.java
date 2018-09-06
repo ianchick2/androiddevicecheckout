@@ -1,6 +1,5 @@
 package com.example.ianchick.checkout.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,9 +43,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
 
-    private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
     private ListDevicesAdapter deviceAdapter;
     private ArrayList<Device> deviceList = new ArrayList<>();
@@ -94,12 +93,11 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         return true;
     }
 
-    @SuppressLint("LogNotTimber")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_device:
-                Log.v(TAG, "Add device");
+                Timber.v("Add device");
                 Intent intent = new Intent(this, AddDevice.class);
                 startActivity(intent);
                 return true;
@@ -195,18 +193,16 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         db.collection("devices").document(d.serialNumber)
                 .set(device)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.v(TAG, "DeviceSnapshot added with ID: " + d.serialNumber);
+                        Timber.v("DeviceSnapshot added with ID: %s", d.serialNumber);
 
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
-                    @SuppressLint("LogNotTimber")
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.v(TAG, "Error adding document", e);
+                        Timber.v(e, "Error adding document");
                     }
                 });
     }
@@ -240,15 +236,15 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                                 }
                                 deviceList.add(device);
                             }
-                            Log.v(TAG, "DocumentSnapshot data: " + data);
+                            Timber.v("DocumentSnapshot data: %s", data);
                         } else {
-                            Log.v(TAG, "No such document");
+                            Timber.v("No such document");
                         }
                     }
                     Collections.sort(deviceList);
                     deviceRecyclerView.setAdapter(deviceAdapter);
                 } else {
-                    Log.v(TAG, "failed query with ", task.getException());
+                    Timber.v(task.getException(), "failed query with ");
                 }
             }
         });

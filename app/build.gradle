@@ -30,6 +30,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:17.1.0'
     implementation 'com.google.firebase:firebase-storage:16.0.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.jakewharton.timber:timber:4.7.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

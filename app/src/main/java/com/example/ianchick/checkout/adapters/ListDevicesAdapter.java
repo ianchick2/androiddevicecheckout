@@ -1,6 +1,5 @@
 package com.example.ianchick.checkout.adapters;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -85,7 +84,6 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
 
         final long ONE_MEGABYTE = 1024 * 1024;
         imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @SuppressLint("LogNotTimber")
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -93,7 +91,6 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 imageView.setVisibility(View.VISIBLE);
             }
         }).addOnFailureListener(new OnFailureListener() {
-            @SuppressLint("LogNotTimber")
             @Override
             public void onFailure(@NonNull Exception exception) {
                 imageView.setVisibility(View.GONE);
