@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     private FirebaseFirestore db;
     private ListDevicesAdapter deviceAdapter;
     private ArrayList<Device> deviceList = new ArrayList<>();
-    private int filterMode;
-
     private RecyclerView deviceRecyclerView;
 
     private Chronometer lastUpdated;
@@ -62,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        filterMode = 0;
-
         lastUpdated = findViewById(R.id.last_updated_status_bar);
         lastUpdated.start();
         lastUpdated.setFormat("Last updated %s ago");
@@ -72,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateDeviceList(deviceAdapter);
+                deviceList = new ArrayList<>();
+                updateDeviceList();
                 swipeLayout.setRefreshing(false);
                 lastUpdated.setBase(SystemClock.elapsedRealtime());
             }
@@ -86,7 +83,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
         deviceAdapter = new ListDevicesAdapter(deviceList);
         deviceAdapter.setOnRecyclerViewItemClickListener(this);
-        updateDeviceList(deviceAdapter);
+        deviceRecyclerView.setAdapter(deviceAdapter);
+        deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        updateDeviceList();
     }
 
     @Override
@@ -105,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                 startActivity(intent);
                 return true;
             case R.id.filter_list:
-                filterDevices();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -113,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         }
     }
 
-    private void showCheckoutDialog(final Device device, final ListDevicesAdapter deviceAdapter) {
+    private void showCheckoutDialog(final Device device) {
         final SharedPreferences sharedPref = this.getSharedPreferences("CheckoutPrefs", Context.MODE_PRIVATE);
         final Set<String> users = sharedPref.getStringSet("Users", new HashSet<String>());
 
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         inputUserDialog.show();
     }
 
-    private void showCheckInDialog(final Device device, final ListDevicesAdapter deviceAdapter) {
+    private void showCheckInDialog(final Device device) {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.checkin_confirmation_dialog, null);
         final AlertDialog inputUserDialog = new AlertDialog.Builder(this)
@@ -213,7 +211,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                 });
     }
 
-    private void updateDeviceList(final ListDevicesAdapter deviceAdapter) {
+    private void updateDeviceList() {
+        deviceAdapter = new ListDevicesAdapter(deviceList);
+        deviceAdapter.setOnRecyclerViewItemClickListener(this);
         db.collection("devices").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task task) {
@@ -247,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
                     }
                     Collections.sort(deviceList);
                     deviceRecyclerView.setAdapter(deviceAdapter);
-                    deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 } else {
                     Log.v(TAG, "failed query with ", task.getException());
                 }
@@ -259,40 +258,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     public void onItemClick(int position, View view) {
         Device device = deviceList.get(position);
         if (deviceList.get(position).isCheckedOut()) {
-            showCheckInDialog(device, deviceAdapter);
+            showCheckInDialog(device);
         } else {
-            showCheckoutDialog(device, deviceAdapter);
-        }
-    }
-
-    public void filterDevices() {
-        ArrayList<Device> checkedOutDevices = new ArrayList<>();
-        ArrayList<Device> checkedInDevices = new ArrayList<>();
-        for (Device d : deviceList) {
-            if (d.isCheckedOut()) {
-                checkedOutDevices.add(d);
-            } else {
-                checkedInDevices.add(d);
-            }
-        }
-        switch (filterMode) {
-            case 0:
-                filterMode += 1;
-                deviceAdapter = new ListDevicesAdapter(checkedInDevices);
-                deviceRecyclerView.setAdapter(deviceAdapter);
-                deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                return;
-            case 1:
-                filterMode += 1;
-                deviceAdapter = new ListDevicesAdapter(checkedOutDevices);
-                deviceRecyclerView.setAdapter(deviceAdapter);
-                deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                return;
-            case 2:
-                filterMode = 0;
-                deviceAdapter = new ListDevicesAdapter(deviceList);
-                deviceRecyclerView.setAdapter(deviceAdapter);
-                deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            showCheckoutDialog(device);
         }
     }
 }

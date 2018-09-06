@@ -53,7 +53,12 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         holder.deviceTitle.setText(device.deviceName);
         holder.deviceSerial.setText(device.serialNumber);
         holder.deviceUser.setText(device.getUserName());
-        holder.deviceIsCheckedOut.setText(device.isCheckedOut().toString());
+
+        if (device.isCheckedOut()) {
+            holder.deviceIsCheckedOut.setText("Device is currently checked out");
+        } else {
+            holder.deviceIsCheckedOut.setText("Available");
+        }
 
         if (!TextUtils.isEmpty(device.imageRef)) {
             setImage(device.imageRef, holder.deviceImageView);
