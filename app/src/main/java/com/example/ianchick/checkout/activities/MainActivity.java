@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(deviceRecyclerView.getContext(), LinearLayoutManager.VERTICAL);
         deviceRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        deviceAdapter = new ListDevicesAdapter(deviceList);
+        deviceAdapter = new ListDevicesAdapter(this, deviceList);
         deviceAdapter.setOnRecyclerViewItemClickListener(this);
         deviceRecyclerView.setAdapter(deviceAdapter);
         deviceRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     }
 
     private void updateDeviceList() {
-        deviceAdapter = new ListDevicesAdapter(deviceList);
+        deviceAdapter = new ListDevicesAdapter(this, deviceList);
         deviceAdapter.setOnRecyclerViewItemClickListener(this);
         db.collection("devices").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
     }
 
     @Override
-    public void onItemClick(View view, String id) {
+    public void onItemClick(String id) {
         Device device = null;
         for (Device d : deviceList) {
             if (d.serialNumber.equals(id)) {

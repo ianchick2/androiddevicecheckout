@@ -1,5 +1,6 @@
 package com.example.ianchick.checkout.adapters;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,6 +33,8 @@ import java.util.List;
  */
 public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.DeviceViewHolder> implements Filterable {
 
+    private Context context;
+
     private ArrayList<Device> devices;
     private ArrayList<Device> devicesFiltered;
     private OnRecyclerViewItemClickListener onItemClickListener;
@@ -38,9 +42,10 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
     private List<String> AVAILABLE_STRINGS = Arrays.asList("available", "false", "free", "avail");
     private List<String> UNAVAILABLE_STRINGS = Arrays.asList("unavailable", "true", "checked", "out");
 
-    public ListDevicesAdapter(ArrayList<Device> source) {
+    public ListDevicesAdapter(Context context, ArrayList<Device> source) {
         this.devices = source;
         this.devicesFiltered = devices;
+        this.context = context;
     }
 
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener onItemClickListener) {
@@ -56,7 +61,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DeviceViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final DeviceViewHolder holder, final int position) {
         final Device device = devicesFiltered.get(position);
         holder.deviceTitle.setText(device.deviceName);
         holder.deviceSerial.setText(device.serialNumber);
@@ -79,6 +84,20 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         } else {
             holder.parentLayout.setAlpha(1f);
         }
+
+        holder.parentLayout.findViewById(R.id.device_item_open_info_layout_hitbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LinearLayout infoLayout = holder.parentLayout.findViewById(R.id.device_item_info_layout);
+                if (infoLayout.getVisibility() == View.GONE) {
+                    infoLayout.setVisibility(View.VISIBLE);
+                    holder.parentLayout.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_less_24px));
+                } else {
+                    infoLayout.setVisibility(View.GONE);
+                    holder.parentLayout.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_more_24px));
+                }
+            }
+        });
     }
 
     @Override
@@ -167,7 +186,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 @Override
                 public void onClick(View view) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(deviceItemView, deviceSerial.getText().toString());
+                        onItemClickListener.onItemClick(deviceSerial.getText().toString());
                     }
                 }
             });
