@@ -66,6 +66,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         holder.deviceTitle.setText(device.deviceName);
         holder.deviceSerial.setText(device.serialNumber);
         holder.deviceUser.setText(device.getUserName());
+        holder.deviceOs.setText(String.valueOf(device.os));
 
         if (device.isCheckedOut()) {
             holder.deviceIsCheckedOut.setText("Device is currently checked out");
@@ -154,6 +155,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         TextView deviceSerial;
         TextView deviceIsCheckedOut;
         TextView deviceUser;
+        TextView deviceOs;
         ImageView deviceImageView;
 
         RelativeLayout parentLayout;
@@ -165,6 +167,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
             deviceSerial = deviceItemView.findViewById(R.id.device_item_serial);
             deviceIsCheckedOut = deviceItemView.findViewById(R.id.device_item_checked_out);
             deviceUser = deviceItemView.findViewById(R.id.device_item_user);
+            deviceOs = deviceItemView.findViewById(R.id.device_item_os);
             deviceImageView = deviceItemView.findViewById(R.id.device_item_image);
 
             parentLayout = deviceItemView.findViewById(R.id.device_list_item_relative_layout);

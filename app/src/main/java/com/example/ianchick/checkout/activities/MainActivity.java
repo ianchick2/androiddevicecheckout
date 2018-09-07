@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
         switch (item.getItemId()) {
             case R.id.add_device:
                 Timber.v("Add device");
-                Intent intent = new Intent(this, AddDevice.class);
+                Intent intent = new Intent(this, EditDeviceActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.search:

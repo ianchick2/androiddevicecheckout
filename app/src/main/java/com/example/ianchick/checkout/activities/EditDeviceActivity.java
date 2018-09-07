@@ -20,14 +20,14 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-public class AddDevice extends AppCompatActivity {
+public class EditDeviceActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_device);
+        setContentView(R.layout.activity_edit_device);
         setTitle("Add a new device");
 
         db = FirebaseFirestore.getInstance();
@@ -35,29 +35,31 @@ public class AddDevice extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_device, menu);
+        getMenuInflater().inflate(R.menu.edit_device, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add_device_save:
-                String deviceName = ((EditText) findViewById(R.id.add_device_title)).getText().toString();
-                String serial = ((EditText) findViewById(R.id.add_device_serial)).getText().toString();
-                String imageRef = ((EditText) findViewById(R.id.add_device_imageref)).getText().toString();
+            case R.id.edit_device_save:
+                String deviceName = ((EditText) findViewById(R.id.edit_device_title)).getText().toString();
+                String serial = ((EditText) findViewById(R.id.edit_device_serial)).getText().toString();
+                String imageRef = ((EditText) findViewById(R.id.edit_device_imageref)).getText().toString();
+                int os = Integer.valueOf(((EditText) findViewById(R.id.edit_device_os_version)).getText().toString());
 
                 if (!TextUtils.isEmpty(deviceName)) {
                     if (!TextUtils.isEmpty(serial)) {
                         Device device = new Device(deviceName, serial);
+                        device.os = os;
                         device.imageRef = imageRef;
                         updateDatabase(device);
                         finish();
                     } else {
-                        ((TextView) findViewById(R.id.add_device_error_message)).setText("Please enter a serial number for the device");
+                        ((TextView) findViewById(R.id.edit_device_error_message)).setText("Please enter a serial number for the device");
                     }
                 } else {
-                    ((TextView) findViewById(R.id.add_device_error_message)).setText("Please enter a device name");
+                    ((TextView) findViewById(R.id.edit_device_error_message)).setText("Please enter a device name");
                 }
                 return true;
             default:
@@ -72,6 +74,7 @@ public class AddDevice extends AppCompatActivity {
         device.put("user", d.getUserName());
         device.put("imageRef", d.imageRef);
         device.put("isCheckedOut", d.isCheckedOut());
+        device.put("os", d.os);
 
         db.collection("devices").document(d.serialNumber)
                 .set(device)

@@ -5,31 +5,46 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    tools:context=".activities.AddDevice">
+    tools:context=".activities.EditDeviceActivity">
 
     <TextView
-        android:id="@+id/add_device_error_message"
+        android:id="@+id/edit_device_error_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/red" />
 
     <EditText
-        android:id="@+id/add_device_title"
+        android:id="@+id/edit_device_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:hint="Device Name" />
 
     <EditText
-        android:id="@+id/add_device_serial"
+        android:id="@+id/edit_device_serial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Device Serial Number" />
 
     <EditText
-        android:id="@+id/add_device_imageref"
+        android:id="@+id/edit_device_imageref"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Device Image Reference" />
+
+    <EditText
+        android:id="@+id/edit_device_os_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:layout_marginBottom="8dp"
+        android:hint="Device OS" />
+
+    <EditText
+        android:id="@+id/edit_device_device_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Device Type" />
 
 </LinearLayout>

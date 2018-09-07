@@ -11,6 +11,8 @@ public class Device implements Comparable<Device> {
     public String serialNumber;
     public String imageRef;
     private String userName;
+    public int os;
+    public String type;
     private boolean isCheckedOut;
 
     public Device(String deviceName, String serialNumber) {
