@@ -84,20 +84,6 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         } else {
             holder.parentLayout.setAlpha(1f);
         }
-
-        holder.parentLayout.findViewById(R.id.device_item_open_info_layout_hitbox).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LinearLayout infoLayout = holder.parentLayout.findViewById(R.id.device_item_info_layout);
-                if (infoLayout.getVisibility() == View.GONE) {
-                    infoLayout.setVisibility(View.VISIBLE);
-                    holder.parentLayout.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_less_24px));
-                } else {
-                    infoLayout.setVisibility(View.GONE);
-                    holder.parentLayout.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_more_24px));
-                }
-            }
-        });
     }
 
     @Override
@@ -187,6 +173,20 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 public void onClick(View view) {
                     if (onItemClickListener != null) {
                         onItemClickListener.onItemClick(deviceSerial.getText().toString());
+                    }
+                }
+            });
+
+            deviceItemView.findViewById(R.id.device_item_open_info_layout_hitbox).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LinearLayout infoLayout = deviceItemView.findViewById(R.id.device_item_info_layout);
+                    if (infoLayout.getVisibility() == View.GONE) {
+                        infoLayout.setVisibility(View.VISIBLE);
+                        deviceItemView.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_less_24px));
+                    } else {
+                        infoLayout.setVisibility(View.GONE);
+                        deviceItemView.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_more_24px));
                     }
                 }
             });
