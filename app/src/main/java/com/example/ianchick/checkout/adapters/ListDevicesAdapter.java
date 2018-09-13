@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.ianchick.checkout.OnRecyclerViewItemClickListener;
+import com.example.ianchick.checkout.OnRecyclerViewItemLongClickListener;
 import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,6 +39,7 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
     private ArrayList<Device> devices;
     private ArrayList<Device> devicesFiltered;
     private OnRecyclerViewItemClickListener onItemClickListener;
+    private OnRecyclerViewItemLongClickListener onRecyclerViewItemLongClickListener;
 
     private List<String> AVAILABLE_STRINGS = Arrays.asList("available", "false", "free", "avail");
     private List<String> UNAVAILABLE_STRINGS = Arrays.asList("unavailable", "true", "checked", "out");
@@ -50,6 +52,10 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
 
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public void setOnRecyclerViewItemLongClickListener(OnRecyclerViewItemLongClickListener onRecyclerViewItemLongClickListener) {
+        this.onRecyclerViewItemLongClickListener = onRecyclerViewItemLongClickListener;
     }
 
     @NonNull
@@ -177,6 +183,17 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                     if (onItemClickListener != null) {
                         onItemClickListener.onItemClick(deviceSerial.getText().toString());
                     }
+                }
+            });
+
+            parentLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (onRecyclerViewItemLongClickListener != null) {
+                        onRecyclerViewItemLongClickListener.onItemLongClick(deviceSerial.getText().toString());
+                        return true;
+                    }
+                    return false;
                 }
             });
 

@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/device_list_item_relative_layout" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/background_light"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:layout_marginBottom="8dp"
-    android:elevation="4dp">
+    android:background="@android:color/background_light"
+    android:elevation="4dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/device_item_title"
@@ -30,9 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_below="@id/device_item_serial"
         android:textColor="@color/deviceAvailability"
-        android:textSize="20sp"
-        android:layout_below="@id/device_item_serial" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/device_item_user"
@@ -44,53 +44,50 @@
         android:textSize="18sp"/>
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/device_item_open_info_layout_hitbox"
         android:layout_alignParentBottom="true"
-        android:id="@+id/device_item_open_info_layout_hitbox">
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/device_item_open_info"
-            android:layout_alignParentEnd="true"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:background="@drawable/ic_baseline_expand_more_24px"
             android:contentDescription="Open and close device info" />
 
     </RelativeLayout>
 
-
-    <ImageView
-        android:id="@+id/device_item_image"
-        android:layout_marginTop="8dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/device_item_checked_out"
-        android:contentDescription="Device Image"/>
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/device_item_image"
         android:id="@+id/device_item_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/device_item_checked_out"
+        android:orientation="vertical"
         android:visibility="gone">
+        <ImageView
+            android:id="@+id/device_item_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="Device Image"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/device_item_os_layout">
+            android:layout_marginTop="8dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Android OS Version: "
                 android:textColor="@android:color/black" />
             <TextView
+                android:id="@+id/device_item_os"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/device_item_os"
                 android:textColor="@android:color/black" />
         </LinearLayout>
 

@@ -14,6 +14,7 @@ import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,14 +24,37 @@ import timber.log.Timber;
 public class EditDeviceActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
+    private String user;
+    private String deviceTitle;
+    private int deviceOs;
+    private String deviceSerial;
+    private String deviceImageRef;
+    private String deviceType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_device);
-        setTitle("Add a new device");
+        setTitle("Edit a new device");
+
+        deviceTitle = getIntent().getStringExtra("deviceTitle");
+        deviceSerial = getIntent().getStringExtra("deviceSerial");
+        deviceOs = getIntent().getIntExtra("deviceOs", 0);
+        deviceImageRef = getIntent().getStringExtra("deviceImageRef");
+        deviceType = getIntent().getStringExtra("deviceType");
+        user = getIntent().getStringExtra("deviceUser");
+
+        ((EditText) findViewById(R.id.edit_device_title)).setText(deviceTitle);
+        ((EditText) findViewById(R.id.edit_device_serial)).setText(deviceSerial);
+        ((EditText) findViewById(R.id.edit_device_os_version)).setText(String.valueOf(deviceOs));
+        ((EditText) findViewById(R.id.edit_device_imageref)).setText(deviceImageRef);
+        ((EditText) findViewById(R.id.edit_device_device_type)).setText(deviceType);
 
         db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
     }
 
     @Override
@@ -41,20 +65,26 @@ public class EditDeviceActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        deviceTitle = ((EditText) findViewById(R.id.edit_device_title)).getText().toString();
+        deviceSerial = ((EditText) findViewById(R.id.edit_device_serial)).getText().toString();
+        String os = ((EditText) findViewById(R.id.edit_device_os_version)).getText().toString();
+        deviceOs = Integer.valueOf(os);
+        deviceImageRef = ((EditText) findViewById(R.id.edit_device_imageref)).getText().toString();
+        deviceType = ((EditText) findViewById(R.id.edit_device_device_type)).getText().toString();
+
         switch (item.getItemId()) {
             case R.id.edit_device_save:
-                String deviceName = ((EditText) findViewById(R.id.edit_device_title)).getText().toString();
-                String serial = ((EditText) findViewById(R.id.edit_device_serial)).getText().toString();
-                String imageRef = ((EditText) findViewById(R.id.edit_device_imageref)).getText().toString();
-                int os = Integer.valueOf(((EditText) findViewById(R.id.edit_device_os_version)).getText().toString());
 
-                if (!TextUtils.isEmpty(deviceName)) {
-                    if (!TextUtils.isEmpty(serial)) {
-                        Device device = new Device(deviceName, serial);
-                        device.os = os;
-                        device.imageRef = imageRef;
+                if (!TextUtils.isEmpty(deviceTitle)) {
+                    if (!TextUtils.isEmpty(deviceSerial)) {
+                        Device device = new Device(deviceTitle, deviceSerial);
+                        device.os = deviceOs;
+                        device.imageRef = deviceImageRef;
+                        device.setUserName(user);
+                        if (!TextUtils.isEmpty(user)) {
+                            device.setCheckedOut(true);
+                        }
                         updateDatabase(device);
-                        finish();
                     } else {
                         ((TextView) findViewById(R.id.edit_device_error_message)).setText("Please enter a serial number for the device");
                     }
@@ -81,13 +111,14 @@ public class EditDeviceActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Timber.v("DeviceSnapshot added with ID: %s", d.serialNumber);
+                        Timber.d("DeviceSnapshot added with ID: %s", d.serialNumber);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Timber.v(e, "Error adding document");
+                        Timber.d(e, "Error adding document");
                     }
                 });
     }
