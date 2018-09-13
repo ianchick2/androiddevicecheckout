@@ -249,10 +249,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerViewIte
 
     private void updateDatabase(final Device d) {
         Map<String, Object> device = new HashMap<>();
-        device.put("title", d.deviceName);
-        device.put("serial", d.serialNumber);
         device.put("user", d.getUserName());
-        device.put("imageRef", d.imageRef);
         device.put("isCheckedOut", d.isCheckedOut());
 
         db.collection("devices").document(d.serialNumber)
