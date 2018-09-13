@@ -80,6 +80,7 @@ public class EditDeviceActivity extends AppCompatActivity {
                         Device device = new Device(deviceTitle, deviceSerial);
                         device.os = deviceOs;
                         device.imageRef = deviceImageRef;
+                        device.type = deviceType;
                         device.setUserName(user);
                         if (!TextUtils.isEmpty(user)) {
                             device.setCheckedOut(true);
@@ -103,6 +104,7 @@ public class EditDeviceActivity extends AppCompatActivity {
         device.put("serial", d.serialNumber);
         device.put("user", d.getUserName());
         device.put("imageRef", d.imageRef);
+        device.put("type", d.type);
         device.put("isCheckedOut", d.isCheckedOut());
         device.put("os", d.os);
 
