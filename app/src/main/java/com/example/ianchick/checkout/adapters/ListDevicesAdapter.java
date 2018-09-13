@@ -1,5 +1,6 @@
 package com.example.ianchick.checkout.adapters;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -11,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.ianchick.checkout.OnRecyclerViewItemClickListener;
+import com.example.ianchick.checkout.OnRecyclerViewItemLongClickListener;
 import com.example.ianchick.checkout.R;
 import com.example.ianchick.checkout.models.Device;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,20 +34,28 @@ import java.util.List;
  */
 public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.DeviceViewHolder> implements Filterable {
 
+    private Context context;
+
     private ArrayList<Device> devices;
     private ArrayList<Device> devicesFiltered;
     private OnRecyclerViewItemClickListener onItemClickListener;
+    private OnRecyclerViewItemLongClickListener onRecyclerViewItemLongClickListener;
 
     private List<String> AVAILABLE_STRINGS = Arrays.asList("available", "false", "free", "avail");
     private List<String> UNAVAILABLE_STRINGS = Arrays.asList("unavailable", "true", "checked", "out");
 
-    public ListDevicesAdapter(ArrayList<Device> source) {
+    public ListDevicesAdapter(Context context, ArrayList<Device> source) {
         this.devices = source;
         this.devicesFiltered = devices;
+        this.context = context;
     }
 
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public void setOnRecyclerViewItemLongClickListener(OnRecyclerViewItemLongClickListener onRecyclerViewItemLongClickListener) {
+        this.onRecyclerViewItemLongClickListener = onRecyclerViewItemLongClickListener;
     }
 
     @NonNull
@@ -56,11 +67,13 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DeviceViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final DeviceViewHolder holder, final int position) {
         final Device device = devicesFiltered.get(position);
         holder.deviceTitle.setText(device.deviceName);
         holder.deviceSerial.setText(device.serialNumber);
         holder.deviceUser.setText(device.getUserName());
+        holder.deviceOs.setText(String.valueOf(device.os));
+        holder.deviceType.setText(device.type);
 
         if (device.isCheckedOut()) {
             holder.deviceIsCheckedOut.setText("Device is currently checked out");
@@ -149,6 +162,8 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
         TextView deviceSerial;
         TextView deviceIsCheckedOut;
         TextView deviceUser;
+        TextView deviceOs;
+        TextView deviceType;
         ImageView deviceImageView;
 
         RelativeLayout parentLayout;
@@ -160,6 +175,8 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
             deviceSerial = deviceItemView.findViewById(R.id.device_item_serial);
             deviceIsCheckedOut = deviceItemView.findViewById(R.id.device_item_checked_out);
             deviceUser = deviceItemView.findViewById(R.id.device_item_user);
+            deviceOs = deviceItemView.findViewById(R.id.device_item_os);
+            deviceType = deviceItemView.findViewById(R.id.device_item_type);
             deviceImageView = deviceItemView.findViewById(R.id.device_item_image);
 
             parentLayout = deviceItemView.findViewById(R.id.device_list_item_relative_layout);
@@ -167,7 +184,32 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
                 @Override
                 public void onClick(View view) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(deviceItemView, deviceSerial.getText().toString());
+                        onItemClickListener.onItemClick(deviceSerial.getText().toString());
+                    }
+                }
+            });
+
+            parentLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (onRecyclerViewItemLongClickListener != null) {
+                        onRecyclerViewItemLongClickListener.onItemLongClick(deviceSerial.getText().toString());
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+            deviceItemView.findViewById(R.id.device_item_open_info_layout_hitbox).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LinearLayout infoLayout = deviceItemView.findViewById(R.id.device_item_info_layout);
+                    if (infoLayout.getVisibility() == View.GONE) {
+                        infoLayout.setVisibility(View.VISIBLE);
+                        deviceItemView.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_less_24px));
+                    } else {
+                        infoLayout.setVisibility(View.GONE);
+                        deviceItemView.findViewById(R.id.device_item_open_info).setBackground(context.getDrawable(R.drawable.ic_baseline_expand_more_24px));
                     }
                 }
             });

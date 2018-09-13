@@ -60,8 +60,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_baseline_search_24px" />
-                            <entry key="sourceFile" value="$USER_HOME$/Downloads/baseline-search-24px.svg" />
+                            <entry key="outputName" value="ic_baseline_edit_24px" />
+                            <entry key="sourceFile" value="$USER_HOME$/Downloads/baseline-edit-24px.svg" />
                           </map>
                         </option>
                       </PersistentState>

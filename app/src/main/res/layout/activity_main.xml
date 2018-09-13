@@ -3,17 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/mainActivityBG"
+    android:orientation="vertical"
     tools:context=".activities.MainActivity">
 
     <Chronometer
+        android:id="@+id/last_updated_status_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/last_updated_status_bar"
         android:background="@android:color/darker_gray"
         android:textAlignment="center"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_wrapper"
