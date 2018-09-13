@@ -36,9 +36,9 @@
         android:id="@+id/edit_device_os_version"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
         android:layout_marginBottom="8dp"
-        android:hint="Device OS" />
+        android:hint="Device OS"
+        android:inputType="number" />
 
     <EditText
         android:id="@+id/edit_device_device_type"

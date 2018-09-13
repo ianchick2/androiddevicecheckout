@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
+    android:orientation="vertical"
     android:padding="24dp">
 
     <AutoCompleteTextView
+        android:id="@+id/input_user_name_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"
         android:completionThreshold="1"
-        android:id="@+id/input_user_name_edit"
-        android:singleLine="true"/>
+        android:hint="Name"
+        android:singleLine="true" />
 
 </LinearLayout>
